@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block titulo %}
+Home GestorEM
+{% endblock %}
+
+{% block content %}
+<div class="py-20">
+    <h1>Página inicial</h1>
+    {% for relatorio in object_list %}
+    <hr>
+    <a href="{% url 'gestao:dashboard' relatorio.pk %}"><p>{{ relatorio.nome }}</p></a>    
+    <p>{{ relatorio.descricao }}</p>
+    <p>{{ relatorio.setor }}</p>
+    {% endfor %}
+</div>
+{% endblock %}
