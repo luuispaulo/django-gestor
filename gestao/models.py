@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractUser
 
 class meli_237330330(models.Model):
     id_venda = models.CharField(max_length=200, primary_key=True) 
@@ -17,6 +18,7 @@ class meli_237330330(models.Model):
 
     class Meta:
         db_table = 'meli_237330330'
+        managed = False
 
     def __str__(self):
         return self.titulo_anuncio
@@ -34,6 +36,8 @@ class relatorio(models.Model):
     nome = models.CharField(max_length=200)
     descricao = models.TextField()
     setor = models.CharField(max_length=20, choices=LISTA_SETORES)
-    src = models.URLField(null=True)
+    src = models.URLField(null=True, blank=True)
     def __str__(self):
         return self.nome
+
+#class usuario(AbstractUser):

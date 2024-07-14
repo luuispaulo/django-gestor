@@ -1,5 +1,7 @@
 #from django.shortcuts import render
 from typing import Any
+
+from django.db.models.query import QuerySet
 from .models import relatorio
 from django.views.generic import TemplateView, ListView, DetailView
 
@@ -28,3 +30,15 @@ class Dashboard(DetailView):
 
     #object_list
 
+class Pesquisagestao(ListView):
+    template_name = 'pesquisa.html'
+    model = relatorio
+        
+        ##pesquisa conforme object lista ou none se
+    def get_queryset(self):
+        termo_pesquisa = self.request.GET.get('query')
+        if termo_pesquisa:
+            object_list = relatorio.objects.filter(nome__icontains=termo_pesquisa)
+            return object_list
+        else:
+            return None
