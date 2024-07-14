@@ -40,4 +40,4 @@ class relatorio(models.Model):
     def __str__(self):
         return self.nome
 
-#class usuario(AbstractUser):
+#class usuario(AbstractUser): -- para usuario caso queira personalizar

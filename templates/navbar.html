@@ -7,25 +7,41 @@
         </a>
     </div>
     <div class="w-6/12 flex flex-nowrap justify-end">
+        {% if user.is_authenticated %}
         <div class="mr-2">
             <form method="get" action="{% url 'gestao:pesquisafilme' %}">
                 <input type="text" class="py-1 px-2 rounded-md text-black border-solid border-2 border-black" name="query" value="{{request.GET.query}}" placeholder="Pesquisar">
                 <input type="submit" value="">
             </form>
         </div>
+        {% endif %}
         <div class="mr-2">
-            <a>
+            {% if user.is_authenticated %}
+            <!-- Formulário de Logout -->
+            <form id="logout-form" action="{% url 'gestao:logout' %}" method="post" style="display: none;">
+                {% csrf_token %}
+            </form>
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
+                    Sair
+                </button>
+            </a>
+            {% else %} 
+            <a href="{% url 'gestao:login' %}">
                 <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
                     Login
                 </button>
-            </a>   
+            </a>
+            {% endif %}   
         </div>
+        {% if user.is_authenticated %}
         <div class="mr-2">
-            <a>    
+            <a href="{% url 'gestao:perfil' %}">    
                 <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
                     Editar Perfil
                 </button>
             </a>    
         </div>
+        {% endif %}
     </div>
 </nav>
