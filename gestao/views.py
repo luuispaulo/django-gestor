@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from typing import Any
 from django.db.models.query import QuerySet
-from .models import relatorio
+from .models import relatorio, meli_237330330
 from django.contrib.auth.models import User
 from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
