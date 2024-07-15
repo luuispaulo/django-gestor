@@ -9,6 +9,11 @@ Home GestorEM
 <style>
     #id_email{
         width:100%;
+        height: 100%;
+        color:black;
+        border: solid 1px;
+        align-items: center;
+        padding: 5px 5px;
     }
 </style>
 {% endblock %}
@@ -17,7 +22,7 @@ Home GestorEM
 <header class="min-h-screen bg-white bg-opacity-0 showcase border-gray-600 border-b-8 flex justify-center items-center bg-no-repeat">
     <div class="z-10 h-full py-32 md:py-0 text-black-100 text-center flex items-center flex-col">
 
-        <h1 class="font-semibold text-4xl md:text-5xl w-10/12 md:w-3/4 text-center">
+        <h1 class="font-semibold text-4xl md:text-5xl w-11/12 md:w-3/4 text-center">
             Decisões estratégicas do seu negócio ao alcance com um clique.
         </h1>
         <h3 class="text-xl md:text-xl py-5">
@@ -29,7 +34,7 @@ Home GestorEM
 
         <div class="w-full flex justify-center">
             <div class="flex justify-center items-center w-12/12 md:w-10/12">
-                <form method="post" class="w-5/12 justify-center ">
+                <form method="post" class="w-12/12 justify-center ">
                     {% csrf_token %}
                     <div class="flex flex-grow items-stretch">
                         {{ form }}

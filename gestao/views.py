@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, reverse
 from typing import Any
 from django.db.models.query import QuerySet
 from .models import relatorio
-from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django.contrib.auth.models import User
+from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CriarContaForm, FormHomePage
 
@@ -21,6 +22,13 @@ class Homepage(FormView):
         else:
             return super().get(request, *args, **kwargs) #redireciona para homepage
 
+    def get_success_url(self):
+        email = self.request.POST.get("email")
+        usuarios = User.objects.filter(email=email)
+        if usuarios:
+            return reverse('gestao:login')
+        else:
+            return reverse('gestao:criarconta')
 #lista de filmes na view homegestor
 #def homegestor(request):
 #   context = {}
@@ -51,8 +59,13 @@ class Pesquisagestao(LoginRequiredMixin, ListView):
         else:
             return None
         
-class Perfil(LoginRequiredMixin,TemplateView):
+class Perfil(LoginRequiredMixin, UpdateView):
     template_name = 'perfil.html'
+    model= User
+    fields = ['first_name', 'last_name', 'email']
+
+    def get_success_url(self):
+        return reverse('gestao:homegestor')
 
 class Criarconta(FormView):
     template_name = 'criarconta.html'
@@ -66,3 +79,5 @@ class Criarconta(FormView):
 ## redireciona o usuario apos criação da conta
     def get_success_url(self):
         return reverse ('gestao:login')
+    
+##
