@@ -1,3 +1,6 @@
+import os
+from pathlib import Path
+
 """
 Django settings for gestorem project.
 
@@ -10,11 +13,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from pathlib import Path
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -27,22 +27,27 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
-INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
+SHARED_APPS = [
+    'django_tenants',  
     'django.contrib.contenttypes',
+    'django.contrib.admin',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'gestao',
     'crispy_forms',
     'crispy_bootstrap5',
+    'gestao_public',
+    'django.contrib.auth',
 ]
 
+TENANT_APPS = ['gestao']
+
+INSTALLED_APPS = list(SHARED_APPS) + list(TENANT_APPS)
+
 MIDDLEWARE = [
+    'django_tenants.middleware.TenantMiddleware',  #tenant
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,7 +62,11 @@ ROOT_URLCONF = 'gestorem.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'gestao_public', 'public', 'templates'),
+            os.path.join(BASE_DIR, 'gestao', 'templates', 'private'),
+            os.path.join(BASE_DIR, 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,24 +81,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gestorem.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django_tenants.postgresql_backend',  # Certifique-se de usar o backend correto
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': '53KeH1scrKlI',
         'HOST': '192.168.0.129',
         'PORT': '5432',
-         'OPTIONS': {
-            'client_encoding': 'UTF8',
-        },
     }
 }
 
+DATABASE_ROUTERS = (
+    'django_tenants.routers.TenantSyncRouter',
+)
+
+TENANT_MODEL = "gestao_public.Tenant"  
+TENANT_DOMAIN_MODEL = "gestao_public.Domain"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -109,7 +120,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -120,7 +130,6 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
@@ -133,8 +142,7 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = 'media/'
 
-MEDIA_ROOT =  BASE_DIR / "media"
-
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -143,11 +151,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'gestao:homegestor'
 
-LOGIN_URL = 'gestao:login' 
+LOGIN_URL = 'gestao:login'
 
 # settings.py
 LOGOUT_REDIRECT_URL = 'gestao:logout'
-##formulario de login com crispy
+
+# Formulário de login com crispy
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'

@@ -18,7 +18,7 @@
         <div class="mr-2">
             {% if user.is_authenticated %}
             <!-- Formulário de Logout -->
-            <form id="logout-form" action="{% url 'gestao:logout' %}" method="post" style="display: none;">
+            <form id="logout-form" action="{% url 'gestao_public:logout' %}" method="post" style="display: none;">
                 {% csrf_token %}
             </form>
             <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -27,7 +27,7 @@
                 </button>
             </a>
             {% else %} 
-            <a href="{% url 'gestao:login' %}">
+            <a href="{% url 'gestao_public:login' %}">
                 <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
                     Login
                 </button>
