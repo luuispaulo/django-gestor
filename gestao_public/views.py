@@ -18,10 +18,10 @@ class Homepage(FormView):
             return super().get(request, *args, **kwargs) #redireciona para homepage
 
     def get_success_url(self):
-        email = self.request.POST.get("email")
-        usuarios = User.objects.filter(email=email)
+        username = self.request.POST.get("username")
+        usuarios = User.objects.filter(username=username)
         if usuarios:
-            return reverse('gestao_public:login')
+            return f"http://{username}.localhost:8000/login"
         else:
             return reverse('gestao_public:criarconta')
         
@@ -50,4 +50,4 @@ class Criarconta(FormView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('gestao_public:login')
+        return reverse('gestao_public:homepage')

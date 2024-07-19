@@ -86,12 +86,15 @@ WSGI_APPLICATION = 'gestorem.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django_tenants.postgresql_backend',  # Certifique-se de usar o backend correto
+        'ENGINE': 'django_tenants.postgresql_backend', 
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': '53KeH1scrKlI',
         'HOST': '192.168.0.129',
         'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c client_encoding=utf8',
+        },
     }
 }
 

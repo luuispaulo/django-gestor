@@ -26,13 +26,17 @@
                     Sair
                 </button>
             </a>
-            {% else %} 
-            <a href="{% url 'gestao_public:login' %}">
+            {% elif request.resolver_match.url_name == 'criarconta'%} 
+            
+            {% elif request.resolver_match.url_name == 'login'%} 
+            
+            {% elif request.resolver_match.url_name == 'homepage' and request.get_host == 'localhost:8000'%}
+            <a href="{% url 'gestao_public:criarconta' %}">
                 <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
-                    Login
+                    Criar conta
                 </button>
             </a>
-            {% endif %}   
+            {% endif %}
         </div>
         {% if user.is_authenticated %}
         <div class="mr-2">

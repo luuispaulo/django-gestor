@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 class FormHomePage(forms.Form):
-    email = forms.EmailField(label=False)
+    username = forms.CharField(label=False)
 
 class CriarContaForm(UserCreationForm):
     email = forms.EmailField(required=True)
