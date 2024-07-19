@@ -1,0 +1,51 @@
+{% load static %}
+
+<nav class="w-full flex justify-between items-center py-3 px-4 fixed z-50">
+    <div class="w-6/12">
+        <a href="/">
+            <img class="w-1/12" src="{% static 'images/g-semfundo.png' %}">
+        </a>
+    </div>
+    <div class="w-6/12 flex flex-nowrap justify-end">
+        {% if user.is_authenticated %}
+        <div class="mr-2">
+            <form method="get" action="{% url 'gestao:pesquisafilme' %}">
+                <input type="text" class="py-1 px-2 rounded-md text-black border-solid border-2 border-black" name="query" value="{{request.GET.query}}" placeholder="Pesquisar">
+                <input type="submit" value="">
+            </form>
+        </div>
+        {% endif %}
+        <div class="mr-2">
+            {% if user.is_authenticated %}
+            <!-- Formulário de Logout -->
+            <form id="logout-form" action="{% url 'gestao_public:logout' %}" method="post" style="display: none;">
+                {% csrf_token %}
+            </form>
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
+                    Sair
+                </button>
+            </a>
+            {% elif request.resolver_match.url_name == 'criarconta'%} 
+            
+            {% elif request.resolver_match.url_name == 'login'%} 
+            
+            {% elif request.resolver_match.url_name == 'homepage' and request.get_host == 'localhost:8000'%}
+            <a href="{% url 'gestao_public:criarconta' %}">
+                <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
+                    Criar conta
+                </button>
+            </a>
+            {% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        <div class="mr-2">
+            <a href="{% url 'gestao:perfil' request.user.pk %}">    
+                <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
+                    Editar Perfil
+                </button>
+            </a>    
+        </div>
+        {% endif %}
+    </div>
+</nav>
