@@ -1,11 +1,12 @@
+from typing import Any
 from .models import Tenant, Domain
 from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView
 from .forms import CriarContaForm, FormHomePage
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth.models import User
 from .models import relatorio
-
 # Create your views here.
+
 
 class Homepage(FormView):
     template_name = 'homepage.html'
@@ -25,6 +26,12 @@ class Homepage(FormView):
 
         else:
             return reverse('gestao_public:criarconta')
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['domain'] = self.request.get_host()
+        return context
+
         
 class Criarconta(FormView):
     template_name = 'criarconta.html'
