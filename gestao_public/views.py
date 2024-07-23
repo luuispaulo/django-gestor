@@ -21,7 +21,7 @@ class Homepage(FormView):
         username = self.request.POST.get("username")
         usuarios = User.objects.filter(username=username)
         if usuarios:
-            return f"http://{username}.localhost:8000/login"
+            return f"http://{username}.gestorem.com.br/login"
         else:
             return reverse('gestao_public:criarconta')
         
@@ -42,7 +42,7 @@ class Criarconta(FormView):
 
         # Cria o domínio para o tenant
         domain = Domain(
-            domain=f'{user.username}.localhost',
+            domain=f'{user.username}.gestorem.com.br',
             tenant=tenant
         )
         domain.save()
