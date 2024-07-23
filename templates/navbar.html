@@ -30,7 +30,7 @@
             
             {% elif request.resolver_match.url_name == 'login'%} 
             
-            {% elif request.resolver_match.url_name == 'homepage' and request.get_host == 'www.gestorem.com.br'%}
+            {% elif request.resolver_match.url_name == 'homepage' and  domain == 'www.gestorem.com.br' %}
             <a href="{% url 'gestao_public:criarconta' %}">
                 <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
                     Criar conta
