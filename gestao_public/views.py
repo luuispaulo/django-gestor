@@ -21,11 +21,8 @@ class Homepage(FormView):
         username = self.request.POST.get("username")
         usuarios = User.objects.filter(username=username)
         if usuarios:
-<<<<<<< HEAD
-            return f"http://{username}.gestorfarma.com.br:8000/login"
-=======
             return f"http://{username}.gestorem.com.br/login"
->>>>>>> 2aaaba6c9e37631e2ca1f3140f315c8d961c1fe6
+
         else:
             return reverse('gestao_public:criarconta')
         
