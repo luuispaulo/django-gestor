@@ -21,7 +21,7 @@ class Homepage(FormView):
         username = self.request.POST.get("username")
         usuarios = User.objects.filter(username=username)
         if usuarios:
-            return f"http://{username}.localhost:8000/login"
+            return f"http://{username}.gestorfarma.com.br:8000/login"
         else:
             return reverse('gestao_public:criarconta')
         
