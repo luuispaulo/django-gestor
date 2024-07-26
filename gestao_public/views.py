@@ -22,17 +22,13 @@ class Homepage(FormView):
         username = self.request.POST.get("username")
         usuarios = User.objects.filter(username=username)
         if usuarios:
-            return f"https://{username}.gestorem.com.br/login"
-
+            
+            return f"http://{username}.gestorem.com.br/login"
+    
         else:
+            
             return reverse('gestao_public:criarconta')
-        
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['domain'] = self.request.get_host()
-        return context
 
-        
 class Criarconta(FormView):
     template_name = 'criarconta.html'
     form_class = CriarContaForm
@@ -43,7 +39,7 @@ class Criarconta(FormView):
 
         # Cria o tenant
         tenant = Tenant(
-            schema_name=user.username,  
+            schema_name=user.username,
             name=user.username,
         )
         tenant.save()
