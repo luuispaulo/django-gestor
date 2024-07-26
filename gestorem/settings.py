@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-zq==t=@z%#)=2ncdx-s#7k98w^4u3^jbz!8q@pf4w02l^w(i1u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['www.gestorem.com.br', 'gestorem.com.br']
+ALLOWED_HOSTS = ['www.gestorem.com.br', 'gestorem.com.br',]
 
 # Application definition
 
@@ -93,7 +93,7 @@ DATABASES = {
         'HOST': '152.250.220.79',
         'PORT': '5432',
         'OPTIONS': {
-            'options': '-c client_encoding=utf8',
+            'options': '-c search_path=gestorem,public',
         },
     }
 }
