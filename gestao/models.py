@@ -41,3 +41,19 @@ class relatorio(models.Model):
 
     def __str__(self):
         return self.nome
+
+## adição configuracao.html ###
+
+
+class configuracao(models.Model):
+    id = models.AutoField(primary_key=True)
+    imposto = models.FloatField(blank=True, null=True)
+    embalagem = models.FloatField(blank=True, null=True)
+    publicidade = models.FloatField(blank=True, null=True)
+    transporte = models.FloatField(blank=True, null=True)
+    custofixo = models.FloatField(blank=True, null=True)
+    lucratividade = models.FloatField(blank=True, null=True)
+    data = models.DateTimeField(default=timezone.now)
+
+def __str__(self):
+        return f"Configuração {self.pk}"

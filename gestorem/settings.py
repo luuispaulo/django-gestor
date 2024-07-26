@@ -93,7 +93,7 @@ DATABASES = {
         'HOST': '152.250.220.79',
         'PORT': '5432',
         'OPTIONS': {
-            'options': '-c client_encoding=utf8',
+            'options': '-c search_path=gestorem,public',
         },
     }
 }

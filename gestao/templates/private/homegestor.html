@@ -3,22 +3,92 @@
 {% block titulo %}
 Home GestorEM
 {% endblock %}
+{% block head %}
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
 
+td, th {
+  border: 1px solid #dddddd;
+  text-align: center;
+  padding: 8px;
+  font-size: 9px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+{% endblock %}
 {% block content %}
 <header class="min-h-screen bg-white bg-opacity-75 showcase border-gray-600 border-b-2 flex justify-center items-center bg-no-repeat">
     <div class="py-20">
-        <h1>Página inicial</h1>
-        {% for relatorio in object_list %}
-        <hr>
-        <a href="{% url 'gestao:dashboard' relatorio.pk %}"><p>{{ relatorio.nome }}</p></a>    
-        <p>{{ relatorio.descricao }}</p>
-        <p>{{ relatorio.setor }}</p>
-        {% endfor %}
+        <form method="get">
+            {{ filter_form.as_p }}
+            <button type="submit">Filtrar</button>
+        </form>
+
+        <table>
+            <tr>
+                <th>ID VENDA</th>
+                <th>TÍTULO</th>
+                <th>QUANTIDADE</th>
+                <th>VALOR PEDIDO</th>
+                <th>COMISSÃO + TAXA</th>
+                <th>FRETE</th>
+                <th>REPASSE</th>
+                <th>IMPOSTO</th>
+                <th>EMBALAGEM</th>
+                <th>PUBLICIDADE</th>
+                <th>TRANSPORTE</th>
+                <th>CUSTO FIXO</th>
+                <th>LUCRATIVIDADE</th>
+                <th>PREÇO IDEAL</th>
+            </tr>
+            {% for meli in meli_237330330_list %}
+            {% with configuracao_list|first as configuracao %}
+            <tr>
+                <td>{{ meli.id_venda }}</td>
+                <td>{{ meli.titulo_anuncio }}</td>
+                <td>{{ meli.quantidade }}</td>
+                <td>{{ meli.valor_pedido }}</td>
+                <td>{{ meli.comissao_taxa_fixa }}</td>
+                <td>{{ meli.frete_cobrado }}</td>
+                <td>{{ meli.repasse }}</td>
+                <td>{{ configuracao.imposto }}</td>
+                <td>{{ configuracao.embalagem }}</td>
+                <td>{{ configuracao.publicidade }}</td>
+                <td>{{ configuracao.transporte }}</td>
+                <td>{{ configuracao.custofixo }}</td>
+                <td>{{ configuracao.lucratividade }}</td>
+    
+            </tr>
+            {% endwith %}
+            {% endfor %}
+        </table>
+
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
     </div>
 </header>
-<footer class=" font-semibold ">
+<footer class="font-semibold">
     <ul class="flex justify-between items-center">
-        
         <li>&copy; 2024</li>
         <li> Feito por LS Software House </li>
         <li>LS</li>

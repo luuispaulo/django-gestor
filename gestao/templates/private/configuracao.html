@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+
+
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block titulo %}
+configuracao
+{% endblock %}
+
+
+{% block content %}
+<header class="min-h-screen bg-white bg-opacity-75 showcase border-gray-600 border-b-2 flex justify-center items-center bg-no-repeat">
+    <div class="z-10 h-full py-32 md:py-0 text-black-100 text-center flex items-center flex-col">
+    <form method="post">
+        {% csrf_token %}
+        {{form|crispy}}
+        <button type="submit">Salvar</button>
+    </form>
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+</header>
+
+<footer class=" font-semibold ">
+    <ul class="flex justify-between items-center">
+        
+        <li>&copy; 2024</li>
+        <li> Feito por LS Software House </li>
+        <li>LS</li>
+    </ul>
+</footer>
+{% endblock %}

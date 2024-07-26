@@ -1,6 +1,6 @@
 #url - view - template
 from django.urls import path, include, reverse_lazy
-from .views import  Homegestor, Dashboard, Pesquisagestao, Perfil, create_user_view
+from .views import  Homegestor, Dashboard, Pesquisagestao, Perfil, create_user_view, configuracao_view
 from django.contrib.auth import views as auth_viewgestao
 
 app_name = 'gestao'
@@ -15,6 +15,7 @@ urlpatterns = [
     path('logout/', auth_viewgestao.LogoutView.as_view(template_name ='logout.html'), name='logout'),
     path('create_user/', create_user_view, name='create_user'),
     path('login/', auth_viewgestao.LoginView.as_view(template_name='login.html'), name='login'),
+    path('configuracao/', configuracao_view, name='configuracao'),
 ]
 
 
