@@ -1,14 +1,14 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from typing import Any
 from django.db.models.query import QuerySet
-from .models import relatorio, meli_237330330
+from .models import relatorio, meli_237330330, configuracao
 from django.contrib.auth.models import User
 from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django_tenants.utils import schema_context
 from gestao_public.models import Tenant
-from .forms import CreateUserForm, FormHomePage
-
+from .forms import CreateUserForm, FormHomePage, ConfiguracaoForm, MeliFilterForm
+from django.contrib import messages
 # Create your views here.
 #def homepage(request):
 #   return render(request, 'homepage.html')
@@ -22,9 +22,29 @@ from .forms import CreateUserForm, FormHomePage
 #    context['lista_relatorios'] = lista_relatorios
 #    return render(request, 'homegestor.html',context)
 
-class Homegestor(LoginRequiredMixin,ListView):
+class Homegestor(LoginRequiredMixin, ListView):
     template_name = 'homegestor.html'
-    model = relatorio
+    model = meli_237330330
+    context_object_name = 'meli_237330330_list'
+    paginate_by = 20  # Adicione paginação se necessário
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filter_form = MeliFilterForm(self.request.GET)
+        if self.filter_form.is_valid():
+            if self.filter_form.cleaned_data['id_venda']:
+                queryset = queryset.filter(id_venda__icontains=self.filter_form.cleaned_data['id_venda'])
+            if self.filter_form.cleaned_data['titulo_anuncio']:
+                queryset = queryset.filter(titulo_anuncio__icontains=self.filter_form.cleaned_data['titulo_anuncio'])
+            # Adicione outros filtros conforme necessário
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = self.filter_form
+        context['configuracao_list'] = configuracao.objects.all()
+        return context
+
 
 class Dashboard(LoginRequiredMixin, DetailView):
     template_name = 'dashboard.html'
@@ -91,3 +111,21 @@ class Homepage(FormView):
             return redirect('gestao:homegestor') #redireciona
         else:
             return super().get(request, *args, **kwargs) #redireciona para homepage
+        
+## adição configuracao.html ##
+
+def configuracao_view(request):
+    configuracao_instance = get_object_or_404(configuracao, pk=1)
+
+    if request.method == 'POST':
+        form = ConfiguracaoForm(request.POST, instance=configuracao_instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Configuração atualizada com sucesso!")
+        else:
+            messages.error(request, "Corrija os erros abaixo.")
+    else:
+        form = ConfiguracaoForm(instance=configuracao_instance)
+
+    return render(request, 'configuracao.html', {'form': form})
+
