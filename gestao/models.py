@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
 
 class meli_237330330(models.Model):
@@ -57,3 +58,26 @@ class configuracao(models.Model):
 
 def __str__(self):
         return f"Configuração {self.pk}"
+
+class integracao(models.Model):
+    id = models.AutoField(primary_key=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    image_src = models.TextField()
+    name = models.CharField(max_length=50)
+    is_activate = models.BooleanField(default=True)
+    id_marketplace = models.IntegerField()
+    id_seller = models.TextField()
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        db_table = 'gestao_integracao'
+class MercadoLivreAuth(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    auth_code = models.CharField(max_length=255)
+    access_token = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.auth_code}'

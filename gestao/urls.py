@@ -1,6 +1,6 @@
 #url - view - template
 from django.urls import path, include, reverse_lazy
-from .views import  Homegestor, Dashboard, Pesquisagestao, Perfil, create_user_view, configuracao_view
+from .views import  Homegestor, Dashboard, Pesquisagestao, Perfil, create_user_view, configuracao_view,IntegracaoListView,IntegracaoCreateView, authorize,callback
 from django.contrib.auth import views as auth_viewgestao
 
 app_name = 'gestao'
@@ -16,7 +16,12 @@ urlpatterns = [
     path('create_user/', create_user_view, name='create_user'),
     path('login/', auth_viewgestao.LoginView.as_view(template_name='login.html'), name='login'),
     path('configuracao/', configuracao_view, name='configuracao'),
+    path('integracoes/', IntegracaoListView.as_view(), name='integracao_list'),
+    path('integracoes/nova/', IntegracaoCreateView.as_view(), name='integracao_create'),
+    path('authorize/',authorize,name='authorize'),
+    path('callback/',callback, name='callback'),
 ]
+
 
 
 ##int:pk nomeia as paginas para que não seja necessario repetir a estrutura criando varios paths

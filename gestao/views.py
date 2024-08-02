@@ -1,14 +1,22 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from typing import Any
 from django.db.models.query import QuerySet
-from .models import relatorio, meli_237330330, configuracao
+from .models import relatorio, meli_237330330, configuracao,MercadoLivreAuth,integracao 
 from django.contrib.auth.models import User
-from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView,CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django_tenants.utils import schema_context
 from gestao_public.models import Tenant
-from .forms import CreateUserForm, FormHomePage, ConfiguracaoForm, MeliFilterForm
+from .forms import CreateUserForm, FormHomePage, ConfiguracaoForm, MeliFilterForm, FormIntegracao
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse_lazy
+import requests
+import json
+import uuid
+
 # Create your views here.
 #def homepage(request):
 #   return render(request, 'homepage.html')
@@ -128,4 +136,92 @@ def configuracao_view(request):
         form = ConfiguracaoForm(instance=configuracao_instance)
 
     return render(request, 'configuracao.html', {'form': form})
+    
 
+class IntegracaoListView(LoginRequiredMixin, ListView):
+    template_name = 'integracao.html'
+    model = integracao
+    context_object_name = 'integracoes'
+
+class IntegracaoCreateView(CreateView):
+    model = integracao
+    form_class = FormIntegracao
+    template_name = 'criar_integracao.html'
+
+    def get_success_url(self):
+        integracao_id = self.object.id
+        state_uuid = uuid.uuid4().hex
+
+        state = f"{state_uuid}:{integracao_id}"
+
+        return reverse_lazy('gestao:authorize') + f'?state={state}'
+
+def authorize(request):
+        state = request.GET.get('state')
+        client_id = '439873324573602'
+        redirect_uri = 'https://www.gestorem.com.br/callback'
+        auth_url = f'https://auth.mercadolivre.com.br/authorization?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&state={state}'
+        return redirect(auth_url)
+    
+@csrf_exempt
+def callback(request):
+    if request.method == 'GET':
+        data = request.GET.dict()  # Recebe os dados da query string
+        
+        expected_fields = {
+            'code': str,
+            'state': str
+        }
+
+        # Verifique se todos os campos esperados estão presentes e são do tipo correto
+        for field, field_type in expected_fields.items():
+            if field not in data or not isinstance(data[field], field_type):
+                return JsonResponse({'status': 'error', 'message': f'Campo {field} faltando ou tipo invalido'}, status=400)
+
+        # Extraia e processe os campos
+        code = data['code']
+        state = data['state']
+        state = state.replace('%A3',":")
+        state_uuid, integracao_id = state.split(':',1)
+
+        integracao_vigente = get_object_or_404(integracao,id=integracao_id)
+
+        url = 'https://api.mercadolibre.com/oauth/token'
+
+        payload = {
+            'grant_type':'authorization_code',
+            'client_id':'439873324573602',
+            'client_secret':'kEy7ah8JxBVHnk3efd9LoSrpodZgc4CH',
+            'code':str(code),
+            'redirect_uri':'https://www.gestorem.com.br/callback',
+            'code_verifier':str(state)
+        }
+
+        headers = {
+            'accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded'
+            
+        }
+
+        response = requests.post(url, data=payload, headers=headers)
+
+        res = response.json()
+
+        access_token = res.get('access_token')
+        user_id = res.get('user_id')
+        refresh_token = res.get('refresh_token')
+        
+        MeliAuth = MercadoLivreAuth(
+                user = request.user,
+                auth_code = user_id,
+                access_token = refresh_token
+        )
+
+        integracao_vigente.id_seller = user_id
+
+        MeliAuth.save()
+        integracao_vigente.save()
+
+        return redirect("gestao:homegestor")
+    
+    return JsonResponse({'status': 'error', 'message': 'Método não permitido'}, status=405)
