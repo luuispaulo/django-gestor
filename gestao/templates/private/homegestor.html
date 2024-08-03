@@ -33,10 +33,11 @@ tr:nth-child(even) {
 
         <table>
             <tr>
-                <th>ID VENDA</th>
-                <th>TÍTULO</th>
-                <th>QUANTIDADE</th>
-                <th>VALOR PEDIDO</th>
+                <th><a href="?{% if request.GET.order_by == 'data_de_criacao' %}order_by=-data_de_criacao{% else %}order_by=data_de_criacao{% endif %}">DATA</a></th>
+                <th><a href="?{% if request.GET.order_by == 'mlb' %}order_by=-mlb{% else %}order_by=mlb{% endif %}">MLB</a></th>
+                <th><a href="?{% if request.GET.order_by == 'titulo_anuncio' %}order_by=-titulo_anuncio{% else %}order_by=titulo_anuncio{% endif %}">TÍTULO</a></th>
+                <th><a href="?{% if request.GET.order_by == 'quantidade' %}order_by=-quantidade{% else %}order_by=quantidade{% endif %}">QUANTIDADE</a></th>
+                <th><a href="?{% if request.GET.order_by == 'valor_pedido' %}order_by=-valor_pedido{% else %}order_by=valor_pedido{% endif %}">VALOR PEDIDO</a></th>
                 <th>COMISSÃO + TAXA</th>
                 <th>FRETE</th>
                 <th>REPASSE</th>
@@ -44,14 +45,14 @@ tr:nth-child(even) {
                 <th>EMBALAGEM</th>
                 <th>PUBLICIDADE</th>
                 <th>TRANSPORTE</th>
-                <th>CUSTO FIXO</th>
                 <th>LUCRATIVIDADE</th>
                 <th>PREÇO IDEAL</th>
             </tr>
             {% for meli in meli_237330330_list %}
             {% with configuracao_list|first as configuracao %}
             <tr>
-                <td>{{ meli.id_venda }}</td>
+                <td>{{ meli.data_de_criacao }}</td>
+                <td>{{ meli.mlb }}</td>
                 <td>{{ meli.titulo_anuncio }}</td>
                 <td>{{ meli.quantidade }}</td>
                 <td>{{ meli.valor_pedido }}</td>
@@ -62,8 +63,17 @@ tr:nth-child(even) {
                 <td>{{ configuracao.embalagem }}</td>
                 <td>{{ configuracao.publicidade }}</td>
                 <td>{{ configuracao.transporte }}</td>
-                <td>{{ configuracao.custofixo }}</td>
                 <td>{{ configuracao.lucratividade }}</td>
+                <td>                    
+                    <form method="post" action="{% url 'gestao:get_price_info' %}" class="form-container">
+                    {% csrf_token %}
+                    <div>
+                        <input type="hidden"  id="mlb" name="mlb" value="{{ meli.mlb }}">
+                        <input type="text" id="price" name="price" required>
+                    </div>
+                    <button type="submit">Alterar preço</button>
+                </form> 
+                </td>
     
             </tr>
             {% endwith %}
@@ -73,25 +83,19 @@ tr:nth-child(even) {
         <div class="pagination">
             <span class="step-links">
                 {% if page_obj.has_previous %}
-                    <a href="?page=1">&laquo; first</a>
-                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    <a href="?page=1{% if request.GET.order_by %}&order_by={{ request.GET.order_by }}{% endif %}">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.order_by %}&order_by={{ request.GET.order_by }}{% endif %}">previous</a>
                 {% endif %}
                 <span class="current">
                     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
                 </span>
                 {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}">next</a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    <a href="?page={{ page_obj.next_page_number }}{% if request.GET.order_by %}&order_by={{ request.GET.order_by }}{% endif %}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.order_by %}&order_by={{ request.GET.order_by }}{% endif %}">last &raquo;</a>
                 {% endif %}
             </span>
         </div>
     </div>
 </header>
-<footer class="font-semibold">
-    <ul class="flex justify-between items-center">
-        <li>&copy; 2024</li>
-        <li> Feito por LS Software House </li>
-        <li>LS</li>
-    </ul>
-</footer>
+
 {% endblock %}

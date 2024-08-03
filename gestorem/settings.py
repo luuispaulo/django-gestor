@@ -40,6 +40,8 @@ SHARED_APPS = [
     'crispy_bootstrap5',
     'gestao_public',
     'django.contrib.auth',
+    'rest_framework'
+
 ]
 
 TENANT_APPS = ['gestao']
@@ -90,7 +92,7 @@ DATABASES = {
         'NAME': 'postgres',
         'USER': 'postgres',
         'PASSWORD': '53KeH1scrKlI',
-        'HOST': '192.168.0.129',
+        'HOST': '152.250.220.79',
         'PORT': '5432',
         'OPTIONS': {
             'options': '-c search_path=gestorem,public',
