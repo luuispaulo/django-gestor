@@ -193,7 +193,7 @@ def callback(request):
         state = data['state']
         
         state = state.replace('%A3',":")
-        state_uuid, integracao_id,tenant_id,user_id = state.split(':')
+        state_uuid, integracao_id,tenant_id,user_integration_id = state.split(':')
 
         tenant = get_object_or_404(Tenant, id = tenant_id)
 
@@ -226,7 +226,7 @@ def callback(request):
             refresh_token = res.get('refresh_token')
             
             MeliAuth = MercadoLivreAuth(
-                    user = user_id,
+                    user = user_integration_id,
                     auth_code = user_id,
                     access_token = refresh_token
             )
