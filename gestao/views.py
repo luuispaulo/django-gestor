@@ -65,7 +65,6 @@ class Homegestor(LoginRequiredMixin, ListView):
         context['configuracao_list'] = configuracao.objects.all()
         return context
 
-
 class Dashboard(LoginRequiredMixin, DetailView):
     template_name = 'dashboard.html'
     model = relatorio
@@ -92,7 +91,6 @@ class Perfil(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('gestao:homegestor')
-
 
 def create_user_view(request):
     if request.method == 'POST':
@@ -149,7 +147,6 @@ def configuracao_view(request):
 
     return render(request, 'configuracao.html', {'form': form})
     
-
 class IntegracaoListView(LoginRequiredMixin, ListView):
     template_name = 'integracao.html'
     model = integracao
@@ -163,15 +160,16 @@ class IntegracaoCreateView(CreateView):
     def get_success_url(self):
         integracao_id = self.object.id
         state_uuid = uuid.uuid4().hex
+        tenant_id = self.request.tenant.id
 
-        state = f"{state_uuid}:{integracao_id}"
+        state = f"{state_uuid}:{integracao_id}:{tenant_id}"
 
         return reverse_lazy('gestao:authorize') + f'?state={state}'
 
 def authorize(request):
         state = request.GET.get('state')
         client_id = '439873324573602'
-        redirect_uri = 'https://www.vivafarma.gestorem.com.br/callback'
+        redirect_uri = 'https://www.gestorem.com.br/callback'
         auth_url = f'https://auth.mercadolivre.com.br/authorization?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&state={state}'
         return redirect(auth_url)
     
@@ -193,48 +191,52 @@ def callback(request):
         # Extraia e processe os campos
         code = data['code']
         state = data['state']
-        state = state.replace('%A3',":")
-        state_uuid, integracao_id = state.split(':',1)
-
-        integracao_vigente = get_object_or_404(integracao,id=integracao_id)
-
-        url = 'https://api.mercadolibre.com/oauth/token'
-
-        payload = {
-            'grant_type':'authorization_code',
-            'client_id':'439873324573602',
-            'client_secret':'kEy7ah8JxBVHnk3efd9LoSrpodZgc4CH',
-            'code':str(code),
-            'redirect_uri':'https://www.vivafarma.gestorem.com.br/callback',
-            'code_verifier':str(state)
-        }
-
-        headers = {
-            'accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
-            
-        }
-
-        response = requests.post(url, data=payload, headers=headers)
-
-        res = response.json()
-
-        access_token = res.get('access_token')
-        user_id = res.get('user_id')
-        refresh_token = res.get('refresh_token')
         
-        MeliAuth = MercadoLivreAuth(
-                user = request.user,
-                auth_code = user_id,
-                access_token = refresh_token
-        )
+        state = state.replace('%A3',":")
+        state_uuid, integracao_id,tenant_id = state.split(':')
 
-        integracao_vigente.id_seller = user_id
+        tenant = get_object_or_404(Tenant, id = tenant_id)
 
-        MeliAuth.save()
-        integracao_vigente.save()
+        with schema_context(tenant.schema_name):
+            integracao_vigente = get_object_or_404(integracao,id=integracao_id)
 
-        return redirect("gestao:homegestor")
+            url = 'https://api.mercadolibre.com/oauth/token'
+
+            payload = {
+                        'grant_type':'authorization_code',
+                        'client_id':'439873324573602',
+                        'client_secret':'kEy7ah8JxBVHnk3efd9LoSrpodZgc4CH',
+                        'code':str(code),
+                        'redirect_uri':'https://www.gestorem.com.br/callback',
+                        'code_verifier':str(state)
+                    }
+
+            headers = {
+                        'accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                        
+                    }
+
+            response = requests.post(url, data=payload, headers=headers)
+
+            res = response.json()
+
+            access_token = res.get('access_token')
+            user_id = res.get('user_id')
+            refresh_token = res.get('refresh_token')
+            
+            MeliAuth = MercadoLivreAuth(
+                    user = request.user,
+                    auth_code = user_id,
+                    access_token = refresh_token
+            )
+
+            integracao_vigente.id_seller = user_id
+
+            MeliAuth.save()
+            integracao_vigente.save()
+
+            return redirect('gestao:integracao_list')
     
     return JsonResponse({'status': 'error', 'message': 'Método não permitido'}, status=405)
 
@@ -279,7 +281,7 @@ class get_price_info(View):
 
     def post(self, request, *args, **kwargs):
             try:
-                refresh_token_url = 'http://localhost:8000/api/refresh_token/'
+                refresh_token_url = 'https://localhost:8000/api/refresh_token/'
                 
                 response = requests.get(refresh_token_url)
                 
