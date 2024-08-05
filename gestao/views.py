@@ -161,7 +161,7 @@ class IntegracaoCreateView(CreateView):
         integracao_id = self.object.id
         state_uuid = uuid.uuid4().hex
         tenant_id = self.request.tenant.id
-        user_id = self.request.user
+        user_id = self.request.user.id
         state = f"{state_uuid}:{integracao_id}:{tenant_id}:{user_id}"
 
         return reverse_lazy('gestao:authorize') + f'?state={state}'
