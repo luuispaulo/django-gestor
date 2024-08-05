@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+
+
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block titulo %}
+configuracao
+{% endblock %}
+{% block head %}
+<style>
+    #formulario {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
+    .form-container {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        background: white;
+        padding: 20px;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-container label,
+    .form-container input {
+        width: 100%;
+        color: black;
+        border: solid 1px;
+        padding: 5px;
+        box-sizing: border-box;
+    }
+
+    .form-container label {
+        text-align: left;
+    }
+    
+    .form-container input {
+        height: 40px; 
+    }
+
+    .form-container div {
+        display: flex;
+        flex-direction: column;
+    }
+
+</style>
+{% endblock %}
+{% block content %}
+<div class="form-wrapper">
+    <header id="formulario" class="min-h-screen bg-white bg-opacity-75 showcase border-gray-600 border-b-2 flex justify-center">
+        <div class="z-10 h-full md:py-0 text-black-100 text-center">
+            <form method="post" action="{% url 'gestao:create_product' %}" class="form-container">
+                {% csrf_token %}
+                <div>
+                    <label for="title">Título:</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div>
+                    <label for="category_id">ID Categoria:</label>
+                    <input type="text" id="category_id" name="category_id" required>
+                </div>
+                <div>
+                    <label for="price">Preço:</label>
+                    <input type="number" id="price" name="price" required>
+                </div>
+                <div>
+                    <label for="currency_id">Moeda:</label>
+                    <input type="text" id="currency_id" name="currency_id" required>
+                </div>
+                <div>
+                    <label for="available_quantity">Quantidade:</label>
+                    <input type="number" id="available_quantity" name="available_quantity" required>
+                </div>
+                <div>
+                    <label for="buying_mode">Modo de Pagamento:</label>
+                    <input type="text" id="buying_mode" name="buying_mode" required>
+                </div>
+                <div>
+                    <label for="condition">Condição do Produto:</label>
+                    <input type="text" id="condition" name="condition" required>
+                </div>
+                <div>
+                    <label for="listing_type_id">ID do Tipo de Anúncio:</label>
+                    <input type="text" id="listing_type_id" name="listing_type_id" required>
+                </div>
+                <div>
+                    <label for="picture_url">URL Imagem:</label>
+                    <input type="text" id="picture_url" name="picture_url" required>
+                </div>
+                <div>
+                    <label for="brand">Marca:</label>
+                    <input type="text" id="brand" name="brand" required>
+                </div>
+                <div>
+                    <label for="ean">EAN:</label>
+                    <input type="text" id="ean" name="ean" required>
+                </div>
+                <button type="submit">Criar Produto</button>
+            </form>
+        </div>
+    </header>
+</div>
+
+{% endblock %}
+
