@@ -225,10 +225,13 @@ def callback(request):
             user_id = res.get('user_id')
             refresh_token = res.get('refresh_token')
             
+            # Buscar ou criar o usuário baseado no user_integration_id
+            user = get_object_or_404(User, id=user_integration_id)
+
             MeliAuth = MercadoLivreAuth(
-                    user = user_integration_id,
-                    auth_code = user_id,
-                    access_token = refresh_token
+                user=user,  # Atribuindo uma instância do User
+                auth_code=user_id,
+                access_token=refresh_token
             )
 
             integracao_vigente.id_seller = user_id
