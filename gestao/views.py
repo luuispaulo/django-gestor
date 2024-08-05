@@ -161,8 +161,8 @@ class IntegracaoCreateView(CreateView):
         integracao_id = self.object.id
         state_uuid = uuid.uuid4().hex
         tenant_id = self.request.tenant.id
-
-        state = f"{state_uuid}:{integracao_id}:{tenant_id}"
+        user_id = self.request.user
+        state = f"{state_uuid}:{integracao_id}:{tenant_id}:{user_id}"
 
         return reverse_lazy('gestao:authorize') + f'?state={state}'
 
@@ -193,7 +193,7 @@ def callback(request):
         state = data['state']
         
         state = state.replace('%A3',":")
-        state_uuid, integracao_id,tenant_id = state.split(':')
+        state_uuid, integracao_id,tenant_id,user_id = state.split(':')
 
         tenant = get_object_or_404(Tenant, id = tenant_id)
 
@@ -226,7 +226,7 @@ def callback(request):
             refresh_token = res.get('refresh_token')
             
             MeliAuth = MercadoLivreAuth(
-                    user = request.user,
+                    user = user_id,
                     auth_code = user_id,
                     access_token = refresh_token
             )
