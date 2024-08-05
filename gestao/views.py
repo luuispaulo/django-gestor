@@ -171,7 +171,7 @@ class IntegracaoCreateView(CreateView):
 def authorize(request):
         state = request.GET.get('state')
         client_id = '439873324573602'
-        redirect_uri = 'https://www.gestorem.com.br/callback'
+        redirect_uri = 'https://www.vivafarma.gestorem.com.br/callback'
         auth_url = f'https://auth.mercadolivre.com.br/authorization?response_type=code&client_id={client_id}&redirect_uri={redirect_uri}&state={state}'
         return redirect(auth_url)
     
@@ -205,7 +205,7 @@ def callback(request):
             'client_id':'439873324573602',
             'client_secret':'kEy7ah8JxBVHnk3efd9LoSrpodZgc4CH',
             'code':str(code),
-            'redirect_uri':'https://www.gestorem.com.br/callback',
+            'redirect_uri':'https://www.vivafarma.gestorem.com.br/callback',
             'code_verifier':str(state)
         }
 
