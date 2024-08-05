@@ -279,7 +279,7 @@ class get_price_info(View):
 
     def post(self, request, *args, **kwargs):
             try:
-                refresh_token_url = 'http://localhost:8000/api/refresh_token/'
+                refresh_token_url = request.build_absolute_uri('/api/refresh_token/')
                 
                 response = requests.get(refresh_token_url)
                 

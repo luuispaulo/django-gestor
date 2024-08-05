@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-zq==t=@z%#)=2ncdx-s#7k98w^4u3^jbz!8q@pf4w02l^w(i1u'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['www.gestorem.com.br', '.gestorem.com.br']
 
