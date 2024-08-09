@@ -24,18 +24,6 @@ from django.http import JsonResponse, HttpResponse
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-# Create your views here.
-#def homepage(request):
-#   return render(request, 'homepage.html')
-
-##substitui a função por uma classe pre definida
-
-#lista de filmes na view homegestor
-#def homegestor(request):
-#   context = {}
-#    lista_relatorios = relatorio.objects.all()
-#    context['lista_relatorios'] = lista_relatorios
-#    return render(request, 'homegestor.html',context)
 
 class Homegestor(LoginRequiredMixin, ListView):
     template_name = 'homegestor.html'
@@ -130,8 +118,6 @@ class Homepage(FormView):
         else:
             return super().get(request, *args, **kwargs) #redireciona para homepage
         
-## adição configuracao.html ##
-
 def configuracao_view(request):
     configuracao_instance = get_object_or_404(configuracao, pk=1)
 
@@ -161,8 +147,7 @@ class IntegracaoCreateView(CreateView):
         integracao_id = self.object.id
         state_uuid = uuid.uuid4().hex
         tenant_id = self.request.tenant.id
-        user_id = self.request.user.id
-        state = f"{state_uuid}:{integracao_id}:{tenant_id}:{user_id}"
+        state = f"{state_uuid}:{integracao_id}:{tenant_id}"
 
         return reverse_lazy('gestao:authorize') + f'?state={state}'
 
@@ -193,7 +178,7 @@ def callback(request):
         state = data['state']
         
         state = state.replace('%A3',":")
-        state_uuid, integracao_id,tenant_id,user_integration_id = state.split(':')
+        state_uuid, integracao_id,tenant_id = state.split(':')
 
         tenant = get_object_or_404(Tenant, id = tenant_id)
 
@@ -225,11 +210,8 @@ def callback(request):
             user_id = res.get('user_id')
             refresh_token = res.get('refresh_token')
             
-            # Buscar ou criar o usuário baseado no user_integration_id
-            user = get_object_or_404(User, id=user_integration_id)
-
             MeliAuth = MercadoLivreAuth(
-                user=user,  # Atribuindo uma instância do User
+                integracao = integracao_id,
                 auth_code=user_id,
                 access_token=refresh_token
             )
@@ -347,8 +329,8 @@ class get_price_info(View):
                     'message': 'An error occurred',
                     'details': str(error)
                 }, status=500)
-##publicar anuncio
 
+#publicar anuncio
 @method_decorator(csrf_exempt, name='dispatch')
 class get_create_product(View):
     def get(self, request, *args, **kwargs):

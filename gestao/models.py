@@ -73,11 +73,12 @@ class integracao(models.Model):
     
     class Meta:
         db_table = 'gestao_integracao'
+
 class MercadoLivreAuth(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    integracao = models.ForeignKey(integracao, on_delete=models.CASCADE)
     auth_code = models.CharField(max_length=255)
     access_token = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.user.username} - {self.auth_code}'
+        return f'{self.integracao.name} - {self.auth_code}'
