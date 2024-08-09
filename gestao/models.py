@@ -82,3 +82,21 @@ class MercadoLivreAuth(models.Model):
 
     def __str__(self):
         return f'{self.integracao.name} - {self.auth_code}'
+
+class Orders(models.Model):
+    integracao = models.ForeignKey(integracao, on_delete=models.CASCADE)
+    id_venda = models.CharField(max_length=200, primary_key=True) 
+    status = models.CharField(max_length=200)
+    data_de_criacao = models.DateTimeField(default=timezone.now)
+    valor_pedido = models.DecimalField(max_digits=10, decimal_places=2)
+    comissao_taxa_fixa = models.DecimalField(max_digits=10, decimal_places=2)
+    frete_cobrado = models.DecimalField(max_digits=10, decimal_places=2)
+    repasse = models.DecimalField(max_digits=10, decimal_places=2)
+    id_anuncio = models.CharField(max_length=500)
+    titulo_anuncio = models.TextField()
+    sku = models.CharField(max_length=500)
+    quantidade = models.IntegerField()
+    modo_de_envio = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.id_venda

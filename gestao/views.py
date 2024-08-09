@@ -211,7 +211,7 @@ def callback(request):
             refresh_token = res.get('refresh_token')
             
             MeliAuth = MercadoLivreAuth(
-                integracao = integracao_vigente,
+                integracao =integracao_vigente,
                 auth_code=user_id,
                 access_token=refresh_token
             )
