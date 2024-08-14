@@ -1,12 +1,12 @@
 {% load static %}
 
 <nav class="w-full flex justify-between items-center py-3 px-4 fixed z-50">
-    <div class="w-5/12">
+    <div class="w-4/12">
         <a href="/">
             <img class="w-1/12" src="{% static 'images/g-semfundo.png' %}">
         </a>
     </div>
-    <div class="w-7/12 flex flex-nowrap justify-end">
+    <div class="w-8/12 flex flex-nowrap justify-end">
         {% if user.is_authenticated %}
         <div class="mr-2">
             <form method="get" action="{% url 'gestao:pesquisafilme' %}">
@@ -65,7 +65,16 @@
                     Criar Anúncio
                 </button>
             </a>    
-        </div>              
+        </div>
+        
+        <div class="mr-2">
+            <a href="{% url 'gestao:MercadoLivre_anuncios' %}">    
+                <button class="bg-[#e01212] text-white py-1 px-3 rounded-md">
+                    Anuncios
+                </button>
+            </a>    
+        </div>  
+
         {% endif %}
     </div>
 </nav>
