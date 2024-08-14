@@ -15,7 +15,7 @@ class FormHomePage(forms.Form):
 class ConfiguracaoForm(forms.ModelForm):
     class Meta:
         model = configuracao
-        fields = ['imposto', 'embalagem', 'publicidade', 'transporte',  'lucratividade']
+        fields = ['imposto', 'embalagem', 'publicidade', 'transporte', 'CMV']
 
 class MeliFilterForm(forms.Form):
     id_venda = forms.CharField(required=False, label='ID Venda')

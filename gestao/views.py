@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from typing import Any
 from django.db.models.query import QuerySet
-from .models import relatorio, meli_237330330, configuracao,MercadoLivreAuth,integracao 
+from .models import relatorio, meli_237330330, configuracao,MercadoLivreAuth,integracao, Orders, MercadoLivreAnuncios
 from django.contrib.auth.models import User
-from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView,CreateView
+from django.views.generic import TemplateView, ListView, DetailView, FormView, UpdateView,CreateView,DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django_tenants.utils import schema_context
 from gestao_public.models import Tenant
@@ -27,8 +27,8 @@ from django.utils.decorators import method_decorator
 
 class Homegestor(LoginRequiredMixin, ListView):
     template_name = 'homegestor.html'
-    model = meli_237330330
-    context_object_name = 'meli_237330330_list'
+    model = Orders
+    context_object_name = 'orders_list'
     paginate_by = 20  # Adicione paginação se necessário
 
     def get_queryset(self):
@@ -132,7 +132,7 @@ def configuracao_view(request):
         form = ConfiguracaoForm(instance=configuracao_instance)
 
     return render(request, 'configuracao.html', {'form': form})
-    
+     
 class IntegracaoListView(LoginRequiredMixin, ListView):
     template_name = 'integracao.html'
     model = integracao
@@ -151,6 +151,10 @@ class IntegracaoCreateView(CreateView):
 
         return reverse_lazy('gestao:authorize') + f'?state={state}'
 
+class IntegracaoDeleteView(LoginRequiredMixin, DeleteView):
+    template_name = 'integracao.html'
+    model = integracao
+    context_object_name = 'integracoes'
 def authorize(request):
         state = request.GET.get('state')
         client_id = '439873324573602'
@@ -411,3 +415,121 @@ class get_create_product(View):
                 'message': 'An error occurred',
                 'details': str(error)
             }, status=500)       
+
+class get_anuncios(View):
+    def get(self, request, *args, **kwargs):
+        try:
+            # Obter o token de acesso
+            refresh_token_url = request.build_absolute_uri('/api/refresh_token/')
+            response = requests.get(refresh_token_url)
+            
+            if response.status_code != 200:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Failed to get refresh token',
+                    'details': response.json()
+                }, status=response.status_code)
+            
+            data = response.json()
+            access_token = data.get('access_token')
+
+            if not access_token:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'No access token found in response',
+                    'details': data
+                }, status=400)
+
+            def fetch_anuncios(scroll_id=None):
+                url = 'https://api.mercadolibre.com/users/237330330/items/search?search_type=scan'
+                if scroll_id:
+                    url += f'&scroll_id={scroll_id}'
+
+                headers = {
+                    'Authorization': f'Bearer {access_token}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+
+                response = requests.get(url, headers=headers)
+
+                if response.status_code != 200:
+                    return {
+                        'status': 'error',
+                        'message': 'Failed to fetch anuncios',
+                        'details': response.json()
+                    }
+
+                userdata = response.json()
+                
+                # Acumular os resultados
+                current_results = userdata.get('results', [])
+                next_scroll_id = userdata.get('scroll_id')
+
+                if next_scroll_id:
+                    next_results = fetch_anuncios(next_scroll_id)
+                    current_results.extend(next_results)
+
+                return current_results
+
+            def process_results(results):
+                detailed_results = []
+
+                for item_id in results:
+                    # Faça uma consulta à API para cada item_id
+                    item_detail_url = f'https://api.mercadolibre.com/items/{item_id}'
+                    headers = {
+                        'Authorization': f'Bearer {access_token}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                    item_response = requests.get(item_detail_url, headers=headers)
+
+                    if item_response.status_code == 200:
+
+                        data_detailed_item = item_response.json()
+
+                        data_save_detailed_item_shipping =  data_detailed_item.get('shipping')
+
+                        Anuncios = MercadoLivreAnuncios(
+                            id_anuncio      = data_detailed_item.get('id'),
+                            auth_code       =  data_detailed_item.get('seller_id'),
+                            status          =  data_detailed_item.get('status'),
+                            titulo          = data_detailed_item.get('title'),
+                            price           =  data_detailed_item.get('price'),
+                            category_id     = data_detailed_item.get('category_id'),
+                            base_price      =  data_detailed_item.get('base_price'),
+                            permalink       = data_detailed_item.get('permalink'),
+                            thumbnail       = data_detailed_item.get('thumbnail'),
+                            shipping_mode   = data_save_detailed_item_shipping.get('mode'),
+                            shipping_free   =  data_save_detailed_item_shipping.get('free_shipping'),
+                            shipping_logistic_type =  data_save_detailed_item_shipping.get('logistic_type')
+                        )
+
+                        Anuncios.save()
+
+                    else:
+                        print(f'Failed to fetch details for item {item_id}')
+                
+                return detailed_results
+
+            # Primeiro, obtém todos os resultados
+            all_results = fetch_anuncios()
+
+            # Depois, processa os resultados
+            all_detailed_results = process_results(all_results)
+
+            return JsonResponse({'results': all_detailed_results})
+
+        except Exception as error:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'An error occurred',
+                'details': str(error)
+            }, status=500)
+
+class MercadoLivreAnuncios(LoginRequiredMixin, ListView):
+    template_name = 'mercadolivre_anuncios.html'
+    model = MercadoLivreAnuncios
+    context_object_name = 'mercadoLivreanuncios_list'
+    paginate_by = 20 

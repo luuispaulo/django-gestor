@@ -13,7 +13,6 @@
             <h2>Lista de Integrações</h2>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Nome</th>
                     <th>Marketplace</th>
                 </tr>
@@ -21,7 +20,6 @@
             <tbody>
                 {% for integracao in integracoes %}
                 <tr>
-                    <td>{{ integracao.id }}</td>
                     <td>{{ integracao.name }}</td>
                     <td>
                         {% if integracao.id_marketplace == 1 %}
