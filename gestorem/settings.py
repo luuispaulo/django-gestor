@@ -44,7 +44,7 @@ SHARED_APPS = [
 
 ]
 
-TENANT_APPS = ['gestao']
+TENANT_APPS = ['gestao','shopee']
 
 INSTALLED_APPS = list(SHARED_APPS) + list(TENANT_APPS)
 
