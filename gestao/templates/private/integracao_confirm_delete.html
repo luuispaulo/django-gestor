@@ -12,7 +12,7 @@
         <form method="post">
           {% csrf_token %}
           <button type="submit" class="btn btn-danger">Confirmar</button>
-          <a href="{% url 'integracao-list' %}" class="btn btn-secondary">Cancelar</a>
+          <a href="{% url 'gestao:integracao_list' %}" class="btn btn-secondary">Cancelar</a>
         </form>
         
     </div>

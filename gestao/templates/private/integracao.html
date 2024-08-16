@@ -26,7 +26,14 @@
                             Mercado Livre
                         {% endif %}
                     </td>
+                    <td>
+                        <form action="{% url 'gestao:integracao_delete' integracao.pk %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Excluir</button>
+                        </form>
+                    </td>
                 </tr>
+
                 {% empty %}
                 <tr>
                     <td colspan="3">Nenhuma integração encontrada.</td>

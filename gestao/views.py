@@ -28,12 +28,26 @@ from decimal import Decimal
 
 class Homegestor(LoginRequiredMixin, ListView):
     template_name = 'homegestor.html'
-    model = meli_237330330
-    context_object_name = 'meli_237330330_list'
+    model = Orders
+    context_object_name = 'orders_list'
     paginate_by = 20  # Adicione paginação se necessário
 
     def get_queryset(self):
+
         queryset = super().get_queryset()
+        self.filter_form = MeliFilterForm(self.request.GET)
+        if self.filter_form.is_valid():
+            if self.filter_form.cleaned_data['id_venda']:
+                queryset = queryset.filter(id_venda__icontains=self.filter_form.cleaned_data['id_venda'])
+            if self.filter_form.cleaned_data['titulo_anuncio']:
+                queryset = queryset.filter(titulo_anuncio__icontains=self.filter_form.cleaned_data['titulo_anuncio'])
+            # Adicione outros filtros conforme necessário
+
+        # Adicionar ordenação
+        order_by = self.request.GET.get('order_by')
+        if order_by:
+            queryset = queryset.order_by(order_by)
+
         configuracao_obj = configuracao.objects.first()
         
         imposto = Decimal(configuracao_obj.imposto)
@@ -51,6 +65,7 @@ class Homegestor(LoginRequiredMixin, ListView):
             meli.valor_publicidade = meli.valor_pedido * (publicidade / Decimal(100))
             meli.valor_transporte = meli.valor_pedido * (transporte / Decimal(100))
             meli.margem = meli.repasse - meli.valor_imposto - meli.valor_cmv - meli.valor_embalagem - meli.valor_publicidade - meli.valor_transporte
+            meli.porcentagem = round ((meli.margem / meli.valor_pedido) * 100,2)
 
         return queryset
 
@@ -158,9 +173,13 @@ class IntegracaoCreateView(CreateView):
         return reverse_lazy('gestao:authorize') + f'?state={state}'
 
 class IntegracaoDeleteView(LoginRequiredMixin, DeleteView):
-    template_name = 'integracao.html'
+    template_name = 'integracao_confirm_delete.html'
     model = integracao
     context_object_name = 'integracoes'
+
+    def get_success_url(self):
+        return reverse('gestao:integracao_list')
+
 def authorize(request):
         state = request.GET.get('state')
         client_id = '439873324573602'

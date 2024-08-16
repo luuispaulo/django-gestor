@@ -30,7 +30,8 @@ tr:nth-child(even) {
         <table>
             <tr>
                 <th><a href="?{% if request.GET.order_by == 'data_de_criacao' %}order_by=-data_de_criacao{% else %}order_by=data_de_criacao{% endif %}">DATA</a></th>
-                <th><a href="?{% if request.GET.order_by == 'mlb' %}order_by=-mlb{% else %}order_by=mlb{% endif %}">MLB</a></th>
+                <th>ID ANUNCIO</th>
+                <th> SKU </th>
                 <th><a href="?{% if request.GET.order_by == 'titulo_anuncio' %}order_by=-titulo_anuncio{% else %}order_by=titulo_anuncio{% endif %}">TÍTULO</a></th>
                 <th><a href="?{% if request.GET.order_by == 'quantidade' %}order_by=-quantidade{% else %}order_by=quantidade{% endif %}">QUANTIDADE</a></th>
                 <th><a href="?{% if request.GET.order_by == 'valor_pedido' %}order_by=-valor_pedido{% else %}order_by=valor_pedido{% endif %}">VALOR PEDIDO</a></th>
@@ -43,36 +44,27 @@ tr:nth-child(even) {
                 <th>PUBLICIDADE</th>
                 <th>TRANSPORTE</th>
                 <th>MARGEM</th>
-                <th>PREÇO IDEAL</th>
+                <th>%</th>
             </tr>
-            {% for meli in meli_237330330_list %}
+            {% for orders in orders_list %}
             {% with configuracao_list|first as configuracao %}
             <tr>
-                <td>{{ meli.data_de_criacao }}</td>
-                <td>{{ meli.mlb }}</td>
-                <td>{{ meli.titulo_anuncio }}</td>
-                <td>{{ meli.quantidade }}</td>
-                <td>{{ meli.valor_pedido }}</td>
-                <td>{{ meli.comissao_taxa_fixa }}</td>
-                <td>{{ meli.frete_cobrado }}</td>
-                <td>{{ meli.repasse }}</td>
-                <td>{{ meli.valor_imposto }}</td>
-                <td>{{ meli.valor_cmv }}</td>
-                <td>{{ meli.valor_embalagem }}</td>
-                <td>{{ meli.valor_publicidade }}</td>
-                <td>{{ meli.valor_transporte }}</td>
-                <td>{{ meli.margem }}</td>
-                <td>                    
-                    <form method="post" action="{% url 'gestao:get_price_info' %}" class="form-container">
-                    {% csrf_token %}
-                    <div>
-                        <input type="hidden"  id="mlb" name="mlb" value="{{ meli.mlb }}">
-                        <input type="text" id="price" name="price" required>
-                    </div>
-                    <button type="submit">Alterar preço</button>
-                </form> 
-                </td>
-    
+                <td>{{ orders.data_de_criacao }}</td>
+                <td>{{ orders.id_anuncio }}</td>
+                <td>{{ orders.sku }}</td>
+                <td>{{ orders.titulo_anuncio }}</td>
+                <td>{{ orders.quantidade }}</td>
+                <td>{{ orders.valor_pedido }}</td>
+                <td>{{ orders.comissao_taxa_fixa }}</td>
+                <td>{{ orders.frete_cobrado }}</td>
+                <td>{{ orders.repasse }}</td>
+                <td>{{ orders.valor_imposto }}</td>
+                <td>{{ orders.valor_cmv }}</td>
+                <td>{{ orders.valor_embalagem }}</td>
+                <td>{{ orders.valor_publicidade }}</td>
+                <td>{{ orders.valor_transporte }}</td>
+                <td>{{ orders.margem }}</td>
+                <td>{{ orders.porcentagem }}</td>
             </tr>
             {% endwith %}
             {% endfor %}
