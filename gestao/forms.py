@@ -25,6 +25,7 @@ class MeliFilterForm(forms.Form):
 class FormIntegracao(forms.ModelForm):
     MARKETPLACE_CHOICES = [
         (1,'Mercado Livre'),
+        (2,'Shopee'),
     ]
 
     id_marketplace = forms.ChoiceField(choices=MARKETPLACE_CHOICES)

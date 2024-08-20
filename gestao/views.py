@@ -165,12 +165,20 @@ class IntegracaoCreateView(CreateView):
     template_name = 'criar_integracao.html'
 
     def get_success_url(self):
+
         integracao_id = self.object.id
         state_uuid = uuid.uuid4().hex
         tenant_id = self.request.tenant.id
-        state = f"{state_uuid}:{integracao_id}:{tenant_id}"
 
-        return reverse_lazy('gestao:authorize') + f'?state={state}'
+        Id_marketplace = self.object.id_marketplace
+
+        if(Id_marketplace == 1 ):
+            state = f"{state_uuid}:{integracao_id}:{tenant_id}"
+            return reverse_lazy('gestao:authorize') + f'?state={state}'
+        
+        if(Id_marketplace == 2 ):
+            state = f"{state_uuid}:{integracao_id}:{tenant_id}"
+            return reverse_lazy('shopee:authorize_shopee') + f'?state={state}'
 
 class IntegracaoDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'integracao_confirm_delete.html'
